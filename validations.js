@@ -19,6 +19,6 @@ export const loginValid = [
 export const postCreateValid=[
     body('title', 'Enter the title').isLength({min:3}).isString(),
     body('text', 'Enter article text').isLength({min: 3}).isString(),
-    body('tags', 'Enter correct tag format').optional().isArray(),
-    
+    body('tags', 'Enter correct tag format').optional().isString(),
+    body('avatarUrl', 'Incorrect link').optional().isString()
 ]

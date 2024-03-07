@@ -96,7 +96,7 @@ export const update = async (req, res) => {
     updatePost.text=req.body.text
     updatePost.tags=req.body.tags
     updatePost.imageUrl=req.body.imageUrl
-    updatePost.user = postId;
+    updatePost.user = req.userId;
 
     await updatePost.save()
 

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import multer from "multer";
 
 import { registerValid, loginValid, postCreateValid } from "./validations.js";
+import cors from 'cors'
 
 import checkAuth from "./utils/checkAuth.js";
 import handleErrors from "./utils/handleErrors.js";
@@ -19,7 +20,7 @@ mongoose
 const app = express();
 
 app.use(express.json());
-
+app.use(cors())
 
 const storage=multer.diskStorage({
   destination:(_,__, cb) => {
@@ -44,13 +45,15 @@ app.post('/upload',checkAuth, upload.single('image'), (req, res)=>{
   })
 })
 
+app.get('/tags', PostControllers.getFiveTags)
+
 app.get("/posts", PostControllers.getAll);
 app.get("/posts/:id", PostControllers.getOne);
 app.post("/posts",checkAuth, postCreateValid,handleErrors, PostControllers.create);
 app.delete("/posts/:id",checkAuth, PostControllers.remove);
 app.patch("/posts/:id",checkAuth, postCreateValid,handleErrors, PostControllers.update);
 
-app.listen(3000, (error) => {
+app.listen(4444, (error) => {
   if (error) {
     return console.log(error);
   }

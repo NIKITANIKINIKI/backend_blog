@@ -22,7 +22,17 @@ export const create = async (req, res) => {
 
 export const getAll = async (req, res) => {
   try {
-    const posts = await PostModel.find().populate("user").exec(); // связь
+    const { sortBy } = req.query;
+
+    let posts
+
+    if(sortBy==='topPosts'){
+      posts=await PostModel.find().sort({viewsNumber:-1}).limit(3).populate("user").exec()
+    }
+    else{
+      posts=await PostModel.find().populate("user").exec(); // связь
+    }
+
     res.json(posts);
   } catch (err) {
     console.log(err);
@@ -36,7 +46,7 @@ export const getOne = async (req, res) => {
   try {
     const postId = req.params.id; // :id
 
-    const article = await PostModel.findById(postId);
+    const article = await PostModel.findById(postId).populate("user");
 
     if (!article) {
       return res.status(404).json({
@@ -92,18 +102,17 @@ export const update = async (req, res) => {
       });
     }
 
-    updatePost.title=req.body.title
-    updatePost.text=req.body.text
-    updatePost.tags=req.body.tags
-    updatePost.imageUrl=req.body.imageUrl
+    updatePost.title = req.body.title;
+    updatePost.text = req.body.text;
+    updatePost.tags = req.body.tags;
+    updatePost.imageUrl = req.body.imageUrl;
     updatePost.user = req.userId;
 
-    await updatePost.save()
+    await updatePost.save();
 
     res.status(200).json({
-        message: 'Статья обновлена'
-    })
-
+      message: "Статья обновлена",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -112,20 +121,20 @@ export const update = async (req, res) => {
   }
 };
 
+export const getFiveTags = async (req, res) => {
+  try {
+    const posts = await PostModel.find().limit(5);
 
-export const getFiveTags=async (req, res) =>{
-  try{
-    const posts=await PostModel.find().limit(5)
+    const tags = posts
+      .map((el) => el.tags)
+      .flat()
+      .slice(0, 5);
 
-    const tags=posts.map((el) => el.tags).flat().slice(0,5)
-
-    res.json(tags)
-
-  }
-  catch(err){
-    console.log(err)
+    res.json(tags);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({
-      message: 'Не удалось получить теги'
-    })
+      message: "Не удалось получить теги",
+    });
   }
-}
+};
